@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <!-- LIBRARIES FOR JQUERY AND JAVA SCRIPT API-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="https://www.google.com/jsapi"></script>
+
+    <script>
+      // gets call when loaded
+      function drawChart() {
+
+        // REQUEST JSON FOR THE FIRST PAGE IN CLASS STREAM
+        var jsonData = $.ajax({
+          url: 'https://data.sparkfun.com/output/' + 'aGOE6rY5mxcxX1GNnOKq' + '.json',
+          data: {page: 1},
+          dataType: 'jsonp',
+        }).done(function (results) {
+
+          var data1 = new google.visualization.DataTable();
+          var data2 = new google.visualization.DataTable();
+
+          data1.addColumn('datetime', 'Time');
+          data2.addColumn('datetime', 'Time');
+          data2.addColumn('number', 'Temperature');
+          data1.addColumn('number', 'Light Intensity');
+
+        var options = {
+            title: 'Kent Weather Station',
+        hAxis: {
+          title: 'TimeStamp'
+        },
+        vAxis: {
+          title: 'Values of Temperature'
+        }
+        };
+
+
+        var options1 = {
+            title: 'Kent Weather Station',
+        hAxis: {
+          title: 'TimeStamp'
+        },
+        vAxis: {
+          title: 'Values of Light'
+        },
+        color: ["red"]
+        };
+
+          $.each(results, function (i, row) {
+              //adds row data from stream to the chart
+            data1.addRow([
+              (new Date(row.timestamp)),
+              parseFloat(row.light)
+            ]);
+          });
+
+          $.each(results, function (i, row) {
+              //adds row data from stream to the chart
+            data2.addRow([
+              (new Date(row.timestamp)),
+              parseFloat(row.temperature)
+            ]);
+          });
+        // LOADS AREA CHART
+          var areaChart = new google.visualization.AreaChart($('#areaChart1').get(0));
+          areaChart.draw(data1, options1);
+
+          var areaChart = new google.visualization.AreaChart($('#areaChart2').get(0));
+          areaChart.draw(data2, options);
+        });
+      }
+      // load chart lib
+      google.load('visualization', '1', {
+        packages: ['corechart']
+      });
+      // calls drawChart once google chart is loaded
+      google.setOnLoadCallback(drawChart);
+    </script>
+  </head>
+
+  <body bgcolor="#A0B0E0">
+     <center><h3>Project</h3></center>
+    <div id="areaChart1" style="width: 100%;"></div>
+    <div id="areaChart2" style="width: 100%;"></div>
+    <br>
+    <br>
+    <h1>Visualization For Kent Weather Streaming</h1>
+    <p>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The above visualization is a Area Chart, represents the temperature and light variations
+        in different locations around kent State University.Temperature and light are recorded from raspberry pi in different locations and uploaded
+        in the class datastream. The above chart displays live variation of temperature and light i.e, in past two hours. If there is no temperature
+        and light is uploaded in the data stream in the past two hours, then previously uploaded data is shown as the current temperature and light.
+        The above chart is visualized using google chart. Google Chart provides chart libraries, from which we can customize our own chart. Google charts
+        are used through java scripts, which is embedded in a html page. In the above visualization, json is used to retrieve the data from the class
+        data stream. Instead of retrieving whole data stream, a single page of data is retrieved by using ajax. From the visualization we can observe clearly
+        that mostly temperature remained constant in different locations, where as intensity of light is varied largely in different locations.
+    </p>
+    <br>
+    <h1>References</h1>
+    <h4><a href="https://developers.google.com/chart/interactive/docs/gallery/areachart?hl=en">https://developers.google.com/chart/interactive/docs/gallery/areachart?hl=en</a></h4>
+    <h4><a href="http://phant.io/graphing/google/2014/07/07/graphing-data/">http://phant.io/graphing/google/2014/07/07/graphing-data/</a></h4>
+  </body>
+</html>
